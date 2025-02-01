@@ -1,5 +1,6 @@
 # Valorant Store Viewer Bot
-A Discord Bot used to check your Valorant Store on Discord!
+### A Discord Bot used to check your Valorant Store on Discord!
+### If you like this Project please make sure to star the repo :)
 
 ## Setup
 ### 1. Use the /login command and click Get Link (make sure you are logged into riot games on the browser it is going to open!)
