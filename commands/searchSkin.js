@@ -36,7 +36,7 @@ module.exports = {
         .setColor(`#${skinTier["highlightColor"].slice(0, -2)}` || "DarkerGrey")
         .setTitle(foundSkin["displayName"]["en-US"])
         .setThumbnail(skinTier["displayIcon"])
-        .setImage(foundSkin["displayIcon"] || foundSkin["levels"][0]["displayIcon"])
+        .setImage(foundSkin["levels"][0]["displayIcon"] || foundSkin["displayIcon"])
         .setDescription(`Price: ${!foundSkin["displayName"]["en-US"].includes('Knife') ? skinTier["price"] || 0 : "1750 - 5950"} ${client.config.Emojis["ValoPoints"]}`)
 
         await interaction.reply({ embeds: [Embed] });
