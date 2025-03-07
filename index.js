@@ -5,6 +5,7 @@ const PREFIX = '!';
 
 const { Client, PermissionsBitField: { Flags: Permissions } } = require('discord.js');
 const db = require('better-sqlite3')('database.db');
+const NodeCache = require('node-cache');
 
 const client = new Client({
 	intents: [
@@ -30,7 +31,8 @@ client.logs = require('./utils/Logs.js');
 client.cooldowns = new Map();
 client.db = db;
 client.skins;
-client.skinsTier;	
+client.skinsTier;
+client.tempTokens = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 require('./utils/ComponentLoader.js')(client);
 require('./utils/EventLoader.js')(client);
