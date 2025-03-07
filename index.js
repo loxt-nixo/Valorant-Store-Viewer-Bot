@@ -20,7 +20,8 @@ db.exec(`
 		accessToken TEXT,
 		entitlementToken TEXT,
 		userUUID TEXT,
-		expires TEXT
+		expires TEXT,
+		serverURL TEXT
     );
 `);
 
