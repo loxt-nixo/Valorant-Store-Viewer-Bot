@@ -1,36 +1,44 @@
 const ValoAPI = require('../utils/ValoAPI');
+const { buildServerSelectMenu } = require('../menus/serverSelect');
 
 module.exports = {
-    customID: 'riot-login',
-    execute: async function(interaction, client, args) {
-        const aTURL = interaction.fields.getTextInputValue(`accessTokenURL`);
+	customID: 'riot-login',
+	execute: async function(interaction, client, args) {
+		try {
+			const aTURL = interaction.fields.getTextInputValue('accessTokenURL');
 
-        const valApi = new ValoAPI({ accessTokenURL: aTURL, SkinsData: client.skins, SkinsTier: client.skinsTier });
+			const valApi = new ValoAPI({ 
+				accessTokenURL: aTURL, 
+				SkinsData: client.skins, 
+				SkinsTier: client.skinsTier 
+			});
+			await valApi.initialize();
+			const { access_token, entitlement_token, user_uuid } = valApi.getTokens();
 
-        await valApi.initialize();
+			if (!client.tempTokens) client.tempTokens = {};
+			client.tempTokens[interaction.user.id] = { access_token, entitlement_token, user_uuid };
 
-        const { access_token, entitlement_token, user_uuid } = valApi.getTokens();
+			await interaction.deferReply({ ephemeral: true });
 
-        const UserAcc = client.db.prepare(`SELECT * FROM User WHERE UserId = ?`).get(interaction.user.id);
+			const row = buildServerSelectMenu();
+			await interaction.editReply({
+				content: 'Successfully logged in! Please select your server:',
+				components: [row]
+			});
+		} catch (error) {
+			console.error(`[${new Date().toISOString()}] Error in 'riot-login' modal:`, error);
 
-        const ExpireDate = Math.floor(Date.now() + 59 * 60 * 1000);
-
-        if (UserAcc) {
-            client.db.prepare(`
-                UPDATE User 
-                SET accessToken = ?, 
-                    entitlementToken = ?, 
-                    userUUID = ?, 
-                    expires = ? 
-                WHERE UserId = ?
-            `).run(access_token, entitlement_token, user_uuid, `${ExpireDate}`, interaction.user.id);            
-        } else {
-            client.db.prepare(`
-                INSERT INTO User (UserId, accessToken, entitlementToken, userUUID, expires) 
-                VALUES (?, ?, ?, ?, ?)
-            `).run(interaction.user.id, access_token, entitlement_token, user_uuid, `${ExpireDate}`);
-        }
-
-        await interaction.reply({ content: `Successfully logged in! Expires (<t:${Math.floor(ExpireDate / 1000)}:R>)`, ephemeral: true });
-    }
-}
+			if (!interaction.replied) {
+				await interaction.reply({
+					content: 'An error occurred during login. Please try again later.',
+					ephemeral: true
+				});
+			} else {
+				await interaction.editReply({
+					content: 'An error occurred during login. Please try again later.',
+					components: []
+				});
+			}
+		}
+	}
+};

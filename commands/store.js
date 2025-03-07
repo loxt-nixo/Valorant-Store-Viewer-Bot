@@ -12,7 +12,7 @@ module.exports = {
 
         if (Date.now() > Number(UserAcc.expires)) return interaction.reply({ content: 'Account access token expired! use /login', ephemeral: true });
 
-        const valApi = new ValoAPI({ SkinsData: client.skins, SkinsTier: client.skinsTier, accessToken: UserAcc.accessToken, entitlementToken: UserAcc.entitlementToken, userUUID: UserAcc.userUUID });
+        const valApi = new ValoAPI({ SkinsData: client.skins, SkinsTier: client.skinsTier, accessToken: UserAcc.accessToken, entitlementToken: UserAcc.entitlementToken, userUUID: UserAcc.userUUID, serverURL: UserAcc.serverURL });
 
         await valApi.initialize();
 
